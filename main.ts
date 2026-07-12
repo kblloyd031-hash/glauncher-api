@@ -26,21 +26,18 @@ Deno.serve(async (req) => {
   const url = new URL(req.url);
   const path = url.pathname;
 
-  // 1️⃣ PUBLIC: Health Check
   if (path === "/ping") return Response.json({ status: "online", time: Date.now() });
 
-  // 2️⃣ ⚡ LIGHTWEIGHT: User Status (Call on every launch)
-  // Handles: Registration, Hardware Locking, and Premium Verification
+  // 1️⃣ ⚡ LIGHTWEIGHT: User Status (Call on every launch)
   if (path === "/user-status") {
     const uid = url.searchParams.get("uid") || "guest";
     const deviceId = url.searchParams.get("device") || "unknown";
-    const email = url.searchParams.get("email") || "Guest User";
+    const email = (url.searchParams.get("email") || "Guest User").toLowerCase(); // Case-insensitive fix
 
     const userKey = ["users", uid];
-    const userEntry = await kv.get<UserProfile>(userKey);
+    const userEntry = await kv.get(userKey);
     let user = userEntry.value;
 
-    // 🔄 New User Tracking
     if (!user) {
       user = {
         uid,
@@ -54,30 +51,29 @@ Deno.serve(async (req) => {
       if (uid !== "guest") await kv.set(userKey, user);
     } else {
       user.lastSeen = new Date().toISOString();
-      if (email !== "Guest User") user.email = email;
-
-      // 🏆 Master Unlock Check
-      const isActuallyPremium = user.isPremium || GLOBAL_PREMIUM_OVERRIDE || MASTER_UNLOCK_LIST.includes(user.email) || MASTER_UNLOCK_LIST.includes(uid);
+      if (email !== "guest user") user.email = email;
       
-      // 🔒 Hardware Locking Logic
-      const maxAllowed = isActuallyPremium ? 5 : 1;
+      // Hardware Locking
+      const isUnlockedTemp = user.isPremium || GLOBAL_PREMIUM_OVERRIDE || MASTER_UNLOCK_LIST.includes(user.email) || MASTER_UNLOCK_LIST.includes(uid);
+      const maxAllowed = isUnlockedTemp ? 5 : 1;
+      
       if (!user.devices.includes(deviceId) && uid !== "guest" && deviceId !== "unknown") {
         if (user.devices.length < maxAllowed) {
           user.devices.push(deviceId);
           await kv.set(userKey, user);
         } else {
           return Response.json({
-            isPremium: isActuallyPremium,
+            isPremium: isUnlockedTemp,
             isBlocked: true,
             isAppLocked: true,
-            blockReason: "DEVICE LIMIT: Your account is locked to " + maxAllowed + " device(s)."
+            blockReason: `DEVICE LIMIT: Active on ${user.devices.length}/${maxAllowed} devices.`
           });
         }
       }
       await kv.set(userKey, user);
     }
 
-    // FINAL DECISION
+    // FINAL DECISION (Combined Check)
     const isUnlocked = user.isPremium || GLOBAL_PREMIUM_OVERRIDE || MASTER_UNLOCK_LIST.includes(user.email) || MASTER_UNLOCK_LIST.includes(uid);
 
     return Response.json({
@@ -88,16 +84,11 @@ Deno.serve(async (req) => {
     });
   }
 
-  // 3️⃣ 📦 HEAVY: App Configuration (Cached for 30 mins on Android)
+  // 2️⃣ 📦 HEAVY: App Configuration (Cached for 30 mins on Android)
   if (path === "/app-config") {
     return Response.json({
       maintenance: { active: false, message: "" },
-      version: { 
-        latest: LATEST_APP_VERSION, 
-        min: MIN_APP_VERSION, 
-        url: "", 
-        force: false 
-      },
+      version: { latest: LATEST_APP_VERSION, min: MIN_APP_VERSION, url: "", force: false },
       features: {
         showAds: true,
         enableAI: true,
@@ -111,27 +102,26 @@ Deno.serve(async (req) => {
     });
   }
 
-  // 4️⃣ 📊 ADMIN: Stats Dashboard
+  // Admin Stats
   if (path === "/stats") {
     if (url.searchParams.get("pw") !== ADMIN_PASSWORD) return new Response("Forbidden", { status: 403 });
-    const users: UserProfile[] = [];
-    for await (const entry of kv.list<UserProfile>({ prefix: ["users"] })) { users.push(entry.value); }
+    const users = [];
+    for await (const entry of kv.list({ prefix: ["users"] })) { users.push(entry.value); }
     return Response.json({
       summary: { total_accounts: users.length, premium_users: users.filter(u => u.isPremium).length },
-      accounts: users.map(u => ({ email: u.email, uid: u.uid, devices: u.devices.length, premium: u.isPremium, last_active: u.lastSeen }))
+      accounts: users.map(u => ({ email: u.email, devices: u.devices.length, premium: u.isPremium, last_active: u.lastSeen }))
     });
   }
 
-  // 5️⃣ 🎮 ADMIN: Remote Control
+  // Remote Actions
   if (path === "/admin") {
     if (url.searchParams.get("pw") !== ADMIN_PASSWORD) return new Response("Forbidden", { status: 403 });
     const uid = url.searchParams.get("uid");
     const action = url.searchParams.get("action");
     if (!uid) return new Response("UID required");
-    const userEntry = await kv.get<UserProfile>(["users", uid]);
+    const userEntry = await kv.get(["users", uid]);
     if (!userEntry.value) return new Response("User not found");
     const user = userEntry.value;
-
     if (action === "premium") user.isPremium = true;
     if (action === "free") user.isPremium = false;
     if (action === "ban") user.isBanned = true;
