@@ -7,10 +7,7 @@ const LATEST_APP_VERSION = "1.0.0";
 const MIN_APP_VERSION = "1.0.0";
 
 // 🚀 MASTER CONTROLS (The "One Line" Unlocks)
-const MASTER_UNLOCK_LIST = [
-   "kblloyd031@gmail.com"
-   "kegodelloyd@gmail.com"
-     ]; // 👈 ADD EMAILS OR UIDs HERE TO UNLOCK SPECIFIC ACCS
+const MASTER_UNLOCK_LIST = [ "kblloyd031@gmail.com","kegodelloyd@gmail.com"]; // 👈 ADD EMAILS OR UIDs HERE TO UNLOCK SPECIFIC ACCS
 const GLOBAL_PREMIUM_OVERRIDE = false;           // 👈 SET TO 'true' TO UNLOCK PREMIUM FOR EVERYONE
 
 // --- TYPES ---
