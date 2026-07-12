@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
 
     // 3. Return the Config (Controls the App)
     return new Response(JSON.stringify({
-      maintenanceMode: false,
+      maintenanceMode: true,
       isPremium: userData.isPremium,
       blocked: false,
       features: {
