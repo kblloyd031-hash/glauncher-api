@@ -71,7 +71,7 @@ Deno.serve(async (req) => {
     }
 
     // 🏆 MASTER LOGIC: Check if this user is in the unlock list or if global override is on
-    const isUnlocked = user.isPremium || GLOBAL_PREMIUM_OVERRIDE || MASTER_UNLOCK_LIST.includes(kblloyd031@gmail.com) || MASTER_UNLOCK_LIST.includes(uid);
+    const isUnlocked = user.isPremium || GLOBAL_PREMIUM_OVERRIDE || MASTER_UNLOCK_LIST.includes(email) || MASTER_UNLOCK_LIST.includes(uid);
 
     return Response.json({
       maintenance: { active: false, message: "" },
