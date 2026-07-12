@@ -12,7 +12,7 @@ Deno.serve(async (req) => {
   // The main config endpoint
   if (url.pathname === "/app-config") {
     const config = {
-      maintenanceMode:true,
+      maintenanceMode:false,
       minVersion: 1,
       features: {
         enableHighQualitySniffing: true,
