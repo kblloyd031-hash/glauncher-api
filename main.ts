@@ -7,7 +7,7 @@ const LATEST_APP_VERSION = "1.0.0";
 const MIN_APP_VERSION = "1.0.0";
 
 // --- 🏆 1. FOREVER ACCESS (Never Expires) ---
-const FOREVER_ULTRA = ["kblloyd031@gmail"]; 
+const FOREVER_ULTRA = ["kblloyd031@gmail.com"]; 
 const FOREVER_PREMIUM = [];
 
 // --- ⏳ 2. TIMED ACCESS (Manage Days Directly Here) ---
