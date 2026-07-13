@@ -13,7 +13,7 @@ const FOREVER_PREMIUM = [];
 // --- ⏳ 2. TIMED ACCESS (Manage Days Directly Here) ---
 // tier: "ultra" (downloads) or "premium" (no downloads)
 const HARDCODED_TIMED_USERS = [
-  { email: "tester@gmail.com", tier: "ultra", days: 30 },
+  { email: " anderskyandersky@gmail.com", tier: "ultra", days: 30 },
   { email: "friend@gmail.com", tier: "premium", days: 7 },
   { email: "trial-user@yahoo.com", tier: "ultra", days: 1 },
 ];
