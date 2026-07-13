@@ -3,15 +3,15 @@ const kv = await Deno.openKv();
 
 // --- ⚙️ CONFIGURATION ---
 const ADMIN_PASSWORD = "admin"; 
-const LATEST_APP_VERSION = "1.0.0";
-const MIN_APP_VERSION = "1.0.0";
+const LATEST_APP_VERSION = "1.0.0"; // Displays in UI
+const MIN_APP_VERSION = "2";       // 🚀 CHANGE THIS to "2" to force everyone to update!
+const UPDATE_URL = "https://github.com/kblloyd031-hash/glauncher-api/releases/latest/download/app-release.apk";
 
 // --- 🏆 1. FOREVER ACCESS (Never Expires) ---
 const FOREVER_ULTRA = ["kblloyd031@gmail.com"]; 
 const FOREVER_PREMIUM = [];
 
 // --- ⏳ 2. TIMED ACCESS (Manage Days Directly Here) ---
-// tier: "ultra" (downloads) or "premium" (no downloads)
 const HARDCODED_TIMED_USERS = [
   { email: "anderskyandersky@gmail.com", tier: "ultra", days: 30 },
   { email: "friend@gmail.com", tier: "premium", days: 7 },
@@ -27,7 +27,7 @@ interface UserProfile {
   ultraUntil: string | null;
   isBanned: boolean;
   devices: string[]; 
-  firstSeen: string; // Used to calculate hardcoded days
+  firstSeen: string; 
   lastSeen: string;
 }
 
@@ -44,7 +44,6 @@ Deno.serve(async (req) => {
     const userEntry = await kv.get(userKey);
     let user = userEntry.value as UserProfile;
 
-    // Initialize User if new
     if (!user) {
       user = { 
         email, uid, isPremium: false, isUltra: false, 
@@ -61,28 +60,23 @@ Deno.serve(async (req) => {
       await kv.set(userKey, user);
     }
 
-    // 🕰️ CALCULATE EXPIRY
     const now = new Date();
     let isPremium = false;
     let isUltra = false;
 
-    // Check Forever Lists
     if (FOREVER_ULTRA.includes(email)) { isPremium = true; isUltra = true; }
     if (FOREVER_PREMIUM.includes(email)) { isPremium = true; }
 
-    // Check Hardcoded Timed List (Calculate from firstSeen)
     const timedConfig = HARDCODED_TIMED_USERS.find(u => u.email === email);
     if (timedConfig) {
         const startDate = new Date(user.firstSeen);
         const expiryDate = new Date(startDate.getTime() + (timedConfig.days * 24 * 60 * 60 * 1000));
-        
         if (now < expiryDate) {
             if (timedConfig.tier === "ultra") { isPremium = true; isUltra = true; }
             if (timedConfig.tier === "premium") { isPremium = true; }
         }
     }
 
-    // Check Database (URL Command) Expiries
     const dbUltraExpired = user.ultraUntil ? now > new Date(user.ultraUntil) : true;
     const dbPremiumExpired = user.premiumUntil ? now > new Date(user.premiumUntil) : true;
     if (!dbUltraExpired || user.isUltra) { isPremium = true; isUltra = true; }
@@ -97,7 +91,31 @@ Deno.serve(async (req) => {
     });
   }
 
-  // Admin URL Command (Kept as a backup)
+  if (path === "/app-config") {
+    return Response.json({ 
+      maintenance: { 
+        active: false, 
+        message: "System upgrade in progress. Nova is resting." 
+      },
+      version: {
+        latest: LATEST_APP_VERSION,
+        min: MIN_APP_VERSION,
+        url: UPDATE_URL,
+        force: true
+      },
+      features: { 
+        showAds: true, 
+        enableAI: true, 
+        enable4K: true,
+        canDownload: true,
+        allowMultiDevice: true
+      },
+      messages: {
+        homeBanner: "Google Launcher - Ultra Premium"
+      }
+    });
+  }
+
   if (path === "/admin") {
     if (url.searchParams.get("pw") !== ADMIN_PASSWORD) return new Response("Forbidden", { status: 403 });
     const email = url.searchParams.get("email")?.toLowerCase().trim();
@@ -114,10 +132,6 @@ Deno.serve(async (req) => {
     else if (action === "unban") { user.isBanned = false; }
     await kv.set(["users", email], user);
     return new Response(`Updated ${email} to ${action} for ${days} days.`);
-  }
-
-  if (path === "/app-config") {
-    return Response.json({ features: { showAds: true, enableAI: true, enable4K: true } });
   }
 
   return new Response("Unauthorized", { status: 401 });
