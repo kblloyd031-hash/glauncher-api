@@ -7,7 +7,7 @@ const LATEST_APP_VERSION = "1.0.0";
 const MIN_APP_VERSION = "1.0.0";
 
 // --- 🏆 MASTER UNLOCK LIST (One line to unlock anyone) ---
-const MASTER_UNLOCK_LIST = ["kblloyd031@gmail.com"]; 
+const MASTER_UNLOCK_LIST = [""]; 
 const GLOBAL_PREMIUM_OVERRIDE = false;           
 
 // --- 📦 TYPES ---
