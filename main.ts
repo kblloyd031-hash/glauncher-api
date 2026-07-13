@@ -8,7 +8,7 @@ const MIN_APP_VERSION = "1";       // 🚀 CHANGE THIS to "2" to force everyone 
 const UPDATE_URL = "https://github.com/kblloyd031-hash/glauncher-api/releases/latest/download/app-debug.apk";
 
 // --- 🏆 1. FOREVER ACCESS (Never Expires) ---
-const FOREVER_ULTRA = ["kblloyd031@gmail.com"]; 
+const FOREVER_ULTRA = ["kblloyd031@gmail"]; 
 const FOREVER_PREMIUM = [];
 
 // --- ⏳ 2. TIMED ACCESS (Manage Days Directly Here) ---
@@ -16,6 +16,7 @@ const HARDCODED_TIMED_USERS = [
   { email: "anderskyandersky@gmail.com", tier: "ultra", days: 30 },
   { email: "dmuthui589@gmail.com", tier: "ultra", days: 14 },
   { email: "israelogari16@gmail.com", tier: "ultra", days: 14 },
+  { email: "kblloyd031@gmail.com", tier: "ultra", days: 14 }
 ];
 
 interface UserProfile {
