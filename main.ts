@@ -18,12 +18,7 @@ const HARDCODED_TIMED_USERS = [
   { email: "israelogari16@gmail.com", tier: "ultra", days: 14 },
   { email: "henryodhiambo2028@gmail.com", tier: "ultra", days: 14 },
   { email: "mokayadaniel56@gmail.com", tier: "ultra", days: 14 }
-  { email: "", tier: "ultra", days: 14 }
-  { email: "", tier: "ultra", days: 14 }
-  { email: "", tier: "ultra", days: 14 }
-  { email: "", tier: "ultra", days: 14 }
-  { email: "kblloyd031@gmail.com", tier: "ultra", days: 14 }
-];
+ ];
 
 interface UserProfile {
   email: string;
