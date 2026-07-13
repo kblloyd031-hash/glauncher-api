@@ -14,8 +14,8 @@ const FOREVER_PREMIUM = [];
 // --- ⏳ 2. TIMED ACCESS (Manage Days Directly Here) ---
 const HARDCODED_TIMED_USERS = [
   { email: "anderskyandersky@gmail.com", tier: "ultra", days: 30 },
-  { email: "dmuthui589@gmail.com", tier: "premium", days: 7 },
-  { email: "trial-user@yahoo.com", tier: "ultra", days: 1 },
+  { email: "dmuthui589@gmail.com", tier: "ultra", days: 14 },
+  { email: "israelogari16@gmail.com", tier: "ultra", days: 14 },
 ];
 
 interface UserProfile {
