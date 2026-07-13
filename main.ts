@@ -16,7 +16,13 @@ const HARDCODED_TIMED_USERS = [
   { email: "anderskyandersky@gmail.com", tier: "ultra", days: 30 },
   { email: "dmuthui589@gmail.com", tier: "ultra", days: 14 },
   { email: "israelogari16@gmail.com", tier: "ultra", days: 14 },
-  { email: "kblloyd031@gmail.com", tier: "premium", days: 14 }
+  { email: "", tier: "ultra", days: 14 },
+  { email: "", tier: "ultra", days: 14 }
+  { email: "", tier: "ultra", days: 14 }
+  { email: "", tier: "ultra", days: 14 }
+  { email: "", tier: "ultra", days: 14 }
+  { email: "", tier: "ultra", days: 14 }
+  { email: "kblloyd031@gmail.com", tier: "ultra", days: 14 }
 ];
 
 interface UserProfile {
