@@ -6,129 +6,76 @@ const ADMIN_PASSWORD = "admin";
 const LATEST_APP_VERSION = "1.0.0";
 const MIN_APP_VERSION = "1.0.0";
 
-// --- 🏆 MASTER UNLOCK LIST (One line to unlock anyone) ---
-const MASTER_UNLOCK_LIST = ["kblloyd031@gmail.com"]; 
+// --- 🏆 INDIVIDUAL ACCESS LISTS (Email Based) ---
+const ULTRA_PREMIUM_EMAILS = [
+  "kblloyd031@gmail.com",
+  "admin@googlelauncher.com"
+]; 
+
+const NORMAL_PREMIUM_EMAILS = [
+  "tester@test.com"
+];
+
+// Hierarchy logic: Ultra gets everything. Premium gets no downloads.
 const GLOBAL_PREMIUM_OVERRIDE = false;           
 
-// --- 📦 TYPES ---
-interface UserProfile {
-  uid: string;
-  email: string;
-  isPremium: boolean;
-  isBanned: boolean;
-  devices: string[]; 
-  firstSeen: string;
-  lastSeen: string;
-}
-
-// --- 🌐 API HANDLER ---
 Deno.serve(async (req) => {
   const url = new URL(req.url);
   const path = url.pathname;
 
-  if (path === "/ping") return Response.json({ status: "online", time: Date.now() });
+  if (path === "/ping") return Response.json({ status: "online" });
 
-  // 1️⃣ ⚡ LIGHTWEIGHT: User Status (Call on every launch)
   if (path === "/user-status") {
     const uid = url.searchParams.get("uid") || "guest";
     const deviceId = url.searchParams.get("device") || "unknown";
-    const email = (url.searchParams.get("email") || "Guest User").toLowerCase(); // Case-insensitive fix
+    const email = (url.searchParams.get("email") || "").toLowerCase().trim();
 
     const userKey = ["users", uid];
     const userEntry = await kv.get(userKey);
     let user = userEntry.value;
 
     if (!user) {
-      user = {
-        uid,
-        email,
-        isPremium: false,
-        isBanned: false,
-        devices: uid !== "guest" && deviceId !== "unknown" ? [deviceId] : [],
-        firstSeen: new Date().toISOString(),
-        lastSeen: new Date().toISOString(),
-      };
+      user = { uid, email, isPremium: false, isUltra: false, devices: [deviceId], lastSeen: new Date().toISOString() };
       if (uid !== "guest") await kv.set(userKey, user);
     } else {
       user.lastSeen = new Date().toISOString();
-      if (email !== "guest user") user.email = email;
-      
-      // Hardware Locking
-      const isUnlockedTemp = user.isPremium || GLOBAL_PREMIUM_OVERRIDE || MASTER_UNLOCK_LIST.includes(user.email) || MASTER_UNLOCK_LIST.includes(uid);
-      const maxAllowed = isUnlockedTemp ? 5 : 1;
-      
-      if (!user.devices.includes(deviceId) && uid !== "guest" && deviceId !== "unknown") {
-        if (user.devices.length < maxAllowed) {
-          user.devices.push(deviceId);
-          await kv.set(userKey, user);
-        } else {
-          return Response.json({
-            isPremium: isUnlockedTemp,
-            isBlocked: true,
-            isAppLocked: true,
-            blockReason: `DEVICE LIMIT: Active on ${user.devices.length}/${maxAllowed} devices.`
-          });
-        }
-      }
+      if (email && email !== "") user.email = email;
       await kv.set(userKey, user);
     }
 
-    // FINAL DECISION (Combined Check)
-    const isUnlocked = user.isPremium || GLOBAL_PREMIUM_OVERRIDE || MASTER_UNLOCK_LIST.includes(user.email) || MASTER_UNLOCK_LIST.includes(uid);
+    // 🏆 DECISION HIERARCHY
+    const isUltra = ULTRA_PREMIUM_EMAILS.includes(user.email) || user.isUltra;
+    const isPremium = isUltra || NORMAL_PREMIUM_EMAILS.includes(user.email) || user.isPremium || GLOBAL_PREMIUM_OVERRIDE;
+    
+    // Downloads only for Ultra
+    const canDownload = isUltra;
 
     return Response.json({
-      isPremium: isUnlocked,
-      isBlocked: user.isBanned,
-      isAppLocked: !isUnlocked,
-      blockReason: user.isBanned ? "Your access has been revoked by the administrator." : null
+      isPremium: isPremium,
+      canDownload: canDownload,
+      isBlocked: user.isBanned || false,
+      isAppLocked: !isPremium,
+      blockReason: user.isBanned ? "Account Revoked" : null
     });
   }
 
-  // 2️⃣ 📦 HEAVY: App Configuration (Cached for 30 mins on Android)
   if (path === "/app-config") {
     return Response.json({
       maintenance: { active: false, message: "" },
       version: { latest: LATEST_APP_VERSION, min: MIN_APP_VERSION, url: "", force: false },
-      features: {
-        showAds: true,
-        enableAI: true,
-        enable4K: true,
-        canDownload: true,
-        allowMultiDevice: true
-      },
-      messages: {
-        homeBanner: "Google Launcher Home",
-      }
+      features: { showAds: true, enableAI: true, enable4K: true }
     });
   }
 
-  // Admin Stats
-  if (path === "/stats") {
-    if (url.searchParams.get("pw") !== ADMIN_PASSWORD) return new Response("Forbidden", { status: 403 });
-    const users = [];
-    for await (const entry of kv.list({ prefix: ["users"] })) { users.push(entry.value); }
-    return Response.json({
-      summary: { total_accounts: users.length, premium_users: users.filter(u => u.isPremium).length },
-      accounts: users.map(u => ({ email: u.email, devices: u.devices.length, premium: u.isPremium, last_active: u.lastSeen }))
-    });
-  }
-
-  // Remote Actions
+  // Admin Toggle Helper: /admin?email=user@mail.com&action=ultra&pw=admin
   if (path === "/admin") {
     if (url.searchParams.get("pw") !== ADMIN_PASSWORD) return new Response("Forbidden", { status: 403 });
-    const uid = url.searchParams.get("uid");
+    const targetEmail = url.searchParams.get("email")?.toLowerCase();
     const action = url.searchParams.get("action");
-    if (!uid) return new Response("UID required");
-    const userEntry = await kv.get(["users", uid]);
-    if (!userEntry.value) return new Response("User not found");
-    const user = userEntry.value;
-    if (action === "premium") user.isPremium = true;
-    if (action === "free") user.isPremium = false;
-    if (action === "ban") user.isBanned = true;
-    if (action === "unban") user.isBanned = false;
-    if (action === "reset") user.devices = [];
-    await kv.set(["users", uid], user);
-    return new Response(`Success: ${user.email} updated to ${action}`);
+    
+    // Note: To use this admin endpoint easily, you'd need a secondary index on emails.
+    // For now, these changes are best managed via the static arrays at the top of the script.
+    return new Response(`Admin command received for ${targetEmail}`);
   }
 
   return new Response("Unauthorized", { status: 401 });
