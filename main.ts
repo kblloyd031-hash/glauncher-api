@@ -3,9 +3,9 @@ const kv = await Deno.openKv();
 
 // --- ⚙️ CONFIGURATION ---
 const ADMIN_PASSWORD = "admin"; 
-const LATEST_APP_VERSION = "1.0.1"; // Displays in UI
-const MIN_APP_VERSION = "2";       // 🚀 CHANGE THIS to "3" to force everyone to update!
-const UPDATE_URL = "https://pub-532ae1cec0544157b46e07176dc7b9d2.r2.dev/google%20launcher/app-debug%20(2).apk";
+const LATEST_APP_VERSION = "1.0.0"; // Displays in UI
+const MIN_APP_VERSION = "3";       // 🚀 CHANGE THIS to "3" to force everyone to update!
+const UPDATE_URL = "https://pub-532ae1cec0544157b46e07176dc7b9d2.r2.dev/app-debug.apk";
 
 // --- 🏆 1. FOREVER ACCESS (Never Expires) ---
 const FOREVER_ULTRA = ["kblloyd031@gmail.com"]; 
