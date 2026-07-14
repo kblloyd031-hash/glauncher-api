@@ -3,8 +3,8 @@ const kv = await Deno.openKv();
 
 // --- ⚙️ CONFIGURATION ---
 const ADMIN_PASSWORD = "admin"; 
-const LATEST_APP_VERSION = "1.0.0"; // Displays in UI
-const MIN_APP_VERSION = "1";       // 🚀 CHANGE THIS to "2" to force everyone to update!
+const LATEST_APP_VERSION = "1.0.1"; // Displays in UI
+const MIN_APP_VERSION = "2";       // 🚀 CHANGE THIS to "3" to force everyone to update!
 const UPDATE_URL = "https://github.com/kblloyd031-hash/glauncher-api/releases/latest/download/app-debug.apk";
 
 // --- 🏆 1. FOREVER ACCESS (Never Expires) ---
