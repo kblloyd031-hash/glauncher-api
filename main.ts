@@ -9,7 +9,7 @@ const UPDATE_URL = "https://pub-532ae1cec0544157b46e07176dc7b9d2.r2.dev/app-debu
 
 // --- 🏆 1. FOREVER ACCESS (Never Expires) ---
 const FOREVER_ULTRA = ["kblloyd@gmail.com"]; 
-const FOREVER_PREMIUM = [""];
+const FOREVER_PREMIUM = ["kblloyd031@gmail.com"];
 
 // --- ⏳ 2. TIMED ACCESS (Manage Days Directly Here) ---
 const HARDCODED_TIMED_USERS = [
