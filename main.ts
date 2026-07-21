@@ -3,7 +3,7 @@ const kv = await Deno.openKv();
 
 // --- ⚙️ CONFIGURATION ---
 const ADMIN_PASSWORD = "admin"; 
-const LATEST_APP_VERSION = "1.0.0"; 
+const LATEST_APP_VERSION = "1.0.2"; 
 const MIN_APP_VERSION = "2";       
 const UPDATE_URL = "https://pub-532ae1cec0544157b46e07176dc7b9d2.r2.dev/app-debug.apk";
 
