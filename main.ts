@@ -15,9 +15,9 @@ const FOREVER_PREMIUM = [""];
 const HARDCODED_TIMED_USERS = [
   { email: "anderskyandersky@gmail.com", tier: "ultra", days: 30 },
   { email: "dmuthui589@gmail.com", tier: "ultra", days: 14 },
-  { email: "israelogari16@gmail.com", tier: "ultra", days: 14 },
-  { email: "henryodhiambo2028@gmail.com", tier: "ultra", days: 14 },
-  { email: "mokayadaniel56@gmail.com", tier: "ultra", days: 14 }
+  { email: "israelogari16@.com", tier: "ultra", days: 14 },
+  { email: "henryodhiambo2028@.com", tier: "ultra", days: 14 },
+  { email: "mokayadaniel56@.com", tier: "ultra", days: 14 }
  ];
 
 interface UserProfile {
