@@ -8,7 +8,7 @@ const MIN_APP_VERSION = "1.0.1";
 const UPDATE_URL = "https://pub-532ae1cec0544157b46e07176dc7b9d2.r2.dev/app-release.apk";
 
 // --- 🏆 1. FOREVER ACCESS (Never Expires) ---
-const FOREVER_ULTRA = ["kblloyd031@gmail.com"]; 
+const FOREVER_ULTRA = ["kblloyd031@gmail.com","Noortana31@gmail.com"]; 
 const FOREVER_PREMIUM = ["thebalusi1@gmail.com"];
 
 // --- ⏳ 2. TIMED ACCESS (Manage Days Directly Here) ---
