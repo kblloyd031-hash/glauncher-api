@@ -5,7 +5,7 @@ const kv = await Deno.openKv();
 const ADMIN_PASSWORD = "admin"; 
 const LATEST_APP_VERSION = "1.0.3"; 
 const MIN_APP_VERSION = "1.0.3";       
-const UPDATE_URL = "https://pub-532ae1cec0544157b46e07176dc7b9d2.r2.dev/app-release%201.0.3.apk";
+const UPDATE_URL = "https://pub-532ae1cec0544157b46e07176dc7b9d2.r2.dev/app-release1.0.3.apk";
 
 // --- 🏆 1. FOREVER ACCESS (Never Expires) ---
 const FOREVER_ULTRA = ["kblloyd031@gmail.com","Noortana31@gmail.com"]; 
